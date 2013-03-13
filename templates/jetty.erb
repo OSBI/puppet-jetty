@@ -1,0 +1,54 @@
+# Managed by Puppet
+
+# Defaults for jetty see /etc/init.d/jetty for more
+
+# change to 0 to allow Jetty to start
+NO_START=0
+
+# change to 'no' or uncomment to use the default setting in /etc/default/rcS
+VERBOSE=yes
+
+# Run Jetty as this user ID (default: jetty)
+# Set this to an empty string to prevent Jetty from starting automatically
+JETTY_USER=manager
+
+# Listen to connections from this network host
+# Use 0.0.0.0 as host to accept all connections.
+# Uncomment to restrict access to localhost
+#JETTY_HOST=$(uname -n)
+<% if scope.lookupvar('jetty::bind_local') -%>
+JETTY_HOST=127.0.0.1
+<% else -%>
+JETTY_HOST=0.0.0.0
+<% end -%>
+
+# The network port used by Jetty
+JETTY_PORT=<%= scope.lookupvar('jetty::port') %>
+
+# Timeout in seconds for the shutdown of all webapps
+#JETTY_SHUTDOWN=30
+
+# Additional arguments to pass to Jetty
+#JETTY_ARGS=
+
+# Extra options to pass to the JVM
+JAVA_OPTIONS="-Djetty.class.path='<% if scope.lookupvar('jetty::config::java') == 'openjava' -%>/usr/lib/jvm/java-6-openjdk/lib:<% elsif scope.lookupvar('jetty::config::java') == 'sunjava' -%>/usr/lib/jvm/java-6-sun:<% end -%>/usr/share/jetty/lib' <% if scope.lookupvar('jetty::remote_debug')%>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998 <% end -%>-Xmx256m -Djava.awt.headless=true <% if scope.lookupvar('jetty::proxy_host') -%>-Dhttp.proxyHost=<%= scope.lookupvar('jetty::proxy_host') %> -Dhttps.proxyHost=<%= scope.lookupvar('jetty::proxy_host') %><% end -%> <% if scope.lookupvar('jetty::proxy_port') -%>-Dhttp.proxyPort=<%= scope.lookupvar('jetty::proxy_port') %> -Dhttps.proxyPort=<%= scope.lookupvar('jetty::proxy_port') %><% end -%><% if scope.lookupvar('jetty::log_root') -%> -Dcustom.logging.root=<%= scope.lookupvar('jetty::log_root') %><% end -%>"
+# Home of Java installation.
+JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64
+
+# The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
+# defined in /etc/default/jetty). Should contain a list of space separated directories.
+#JDK_DIRS="/usr/lib/jvm/java-6-sun"
+
+# Java compiler to use for translating JavaServer Pages (JSPs). You can use all
+# compilers that are accepted by Ant's build.compiler property.
+#JSP_COMPILER=jikes
+
+# Jetty uses a directory to store temporary files like unpacked webapps
+#JETTY_TMP=/var/cache/jetty
+
+# Jetty uses a config file to setup its boot classpath
+#JETTY_START_CONFIG=/etc/jetty/start.config
+
+# Default for number of days to keep old log files in /var/log/jetty/
+LOGFILE_DAYS=365
